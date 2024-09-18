@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Automatización: Elaboración del CIPD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="login-container" class="container">
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Correo electrónico" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+    </div>
+
+
+    
+    <div id="main-container" class="container" style="display: none;">
+        <header>
+            <div class="logo-container">
+                <img src="css/logo/logo.png" alt="Logo" class="logo">
+            </div>
+            <div class="title-container">
+                <h1>Sistema de Automatizacion</h1>
+                <h1>Pago a Evaluadores Externos (CIPD)</h1>
+            </div>
+        </header>
+
+        <nav>
+            <button id="btnCheckList">Obtener el Check List</button>
+            <button id="btnChatGPT">Ir a ChatGPT</button>
+            <button id="btnCIPD">Obtener datos para CIPD</button>
+        </nav>
+        
+        <main class="two-column-layout">
+            <div class="steps-column">
+                <section id="step1" class="step active">
+                    <i class="fas fa-file-upload step-icon"></i>
+                    <h3>1. Subir Archivos</h3>
+                    <i class="fas fa-check check-icon" style="display: none;"></i>
+                </section>
+                <section id="step2" class="step">
+                    <i class="fas fa-file-alt step-icon"></i>
+                    <h3>2. Convertir PDF a Texto / Excel (CHECKLIST)</h3>
+                    <i class="fas fa-check check-icon" style="display: none;"></i>
+                </section>
+                <section id="step3" class="step">
+                    <i class="fas fa-file-excel step-icon"></i>
+                    <h3>3. Obtener Datos en Excel</h3>
+                    <i class="fas fa-check check-icon" style="display: none;"></i>
+                </section>
+            </div>
+            <div class="actions-column">
+                <section id="action1" class="action-section active">
+                    <button id="search-delete-pdfs" class="action-button" style="display: none;">Buscar y eliminar archivos</button>
+                    <div id="processing1" class="processing-message" style="display: none;">Procesando...</div>
+                    <div id="step1-message" class="message"></div>
+                    
+                    <div class="file-upload-container">
+                        <input type="file" id="file-upload" multiple accept=".pdf" class="file-input">
+                        <label for="file-upload" class="file-label">Elegir archivos</label>
+                        <span id="files-selected-message"></span>
+                        <button id="upload-button" class="action-button">Subir archivos</button>
+                    </div>
+                    <div id="processing2" class="processing-message" style="display: none;">Procesando...</div>
+                    <div id="step2-message" class="message"></div>
+                </section>
+            
+                <section id="action2" class="action-section">
+                    <div id="processing3" class="processing-message" style="display: none;">Procesando enlaces...</div>
+                    <div id="step3-message" class="message"></div>
+                    
+                    <div id="processing4" class="processing-message" style="display: none;">Procesando...</div>
+                    <div id="step4-message" class="message"></div>
+            
+                    <div id="important-notice" style="display: none;">
+                        <div class="notice-text">
+                            <p><strong>IMPORTANTE:</strong></p>
+                            <p>1.- Descomprir el archivo ZIP que se ha descargado en su carpeta "Descargas" de su PC.</p>
+                            <p>2.- Encontará los archivos TXT y un archivo en EXCEL que contiene el <strong>CHECKLIST</strong> de los Expedientes de Proveedores, para su revisión.</p>
+                            <p>3.- Las sub-Unidades correspondientes deberán revisar el archivo CHECKLIST.xlsx y de ser el caso, dar su <strong>CONFORMIDAD</strong></p>
+                            <p>4.- Con la CONFORMIDAD del Chek List, continue con el siguiente paso de "Ir a ChatGPT"</p>
+                        </div>
+                        <button id="conform-button" class="action-button">Conforme</button>
+                    </div>
+                </section>
+            
+                <section id="action3" class="action-section" style="display: none;">
+                    <div id="processing5" class="processing-message" style="display: none;">Procesando...</div>
+                    
+                    <div class="file-upload-container">
+                        <input type="file" id="json-upload" accept=".json" class="file-input">
+                        <label for="json-upload" class="file-label">Elegir archivos JSON</label>
+                        <div id="json-files-selected-message" class="message"></div>
+                        <button id="convert-json" class="action-button">Convertir a Excel</button>
+                    </div>
+                
+                    <div id="step5-message" class="message"></div>
+                    <div id="success-message" class="message success" style="display: none;"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html>
