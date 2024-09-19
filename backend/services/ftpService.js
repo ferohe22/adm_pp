@@ -7,17 +7,15 @@ require('dotenv').config();
 
 class FtpService {
     constructor() {
-        this.client = new ftp.Client();
-        this.client.ftp.verbose = false;
         this.connectionPool = [];
         this.maxConnections = 5;
+        this.connectionTimeout = 60000; // 1 minuto
+        this.keepAliveInterval = 30000; // 30 segundos
     }
 
-    async getConnection() {
-        if (this.connectionPool.length > 0) {
-            return this.connectionPool.pop();
-        }
-        const client = new ftp.Client();
+    async createClient() {
+        const client = new ftp.Client(0);
+        client.ftp.verbose = false;
         try {
             await client.access({
                 host: process.env.FTP_HOST,
@@ -25,6 +23,8 @@ class FtpService {
                 password: decrypt(process.env.FTP_PASS),
                 secure: false
             });
+            client.lastUsed = Date.now();
+            this.setupKeepAlive(client);
             return client;
         } catch (error) {
             logger.error('Failed to establish FTP connection', { error: error.message });
@@ -32,10 +32,43 @@ class FtpService {
         }
     }
 
+    setupKeepAlive(client) {
+        client.keepAliveInterval = setInterval(async () => {
+            try {
+                await client.list();
+            } catch (error) {
+                logger.warn('Keep-alive failed, closing connection', { error: error.message });
+                clearInterval(client.keepAliveInterval);
+                client.close();
+            }
+        }, this.keepAliveInterval);
+    }
+
+    async getConnection() {
+        const now = Date.now();
+        this.connectionPool = this.connectionPool.filter(conn => now - conn.lastUsed < this.connectionTimeout);
+        
+        if (this.connectionPool.length > 0) {
+            const client = this.connectionPool.pop();
+            try {
+                await client.list();
+                return client;
+            } catch (error) {
+                logger.warn('Stale connection detected, creating new one', { error: error.message });
+                client.close();
+                return this.createClient();
+            }
+        }
+        
+        return this.createClient();
+    }
+
     async releaseConnection(client) {
+        client.lastUsed = Date.now();
         if (this.connectionPool.length < this.maxConnections) {
             this.connectionPool.push(client);
         } else {
+            clearInterval(client.keepAliveInterval);
             client.close();
         }
     }
